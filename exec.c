@@ -12,19 +12,18 @@ char *create_pathname(char *cmd)
 	char *pathname = NULL;
 	char *path = NULL;
 	char *PATH;
-	int lencmd, lenpath = 0;
+	int lencmd = 0;
+	int lenpath = 0;
 
 	PATH = getenv("PATH");
-	printf("%s\n", PATH);
 
 	path = strtok(PATH, ":");
-	printf("%s\n", path);
 
 	while (cmd[lencmd] != '\0')
 		lencmd++;
 
 	while (path[lenpath] != '\0')
-		lenpath++;
+		lenpath++;	
 
 	while (path != NULL)
 	{
@@ -37,8 +36,7 @@ char *create_pathname(char *cmd)
 
 		pathname = _strcpy(pathname, path);
 		pathname = _strcat(pathname, "/");
-		pathname = _strcat(pathname, "cmd");
-		printf("%s\n", pathname);
+		pathname = _strcat(pathname, cmd);
 				
 		if (access(pathname, X_OK) == 0)
 			return (pathname);
@@ -72,15 +70,13 @@ int execute_cmd(char *pathname, char **tokens, char **env)
 	else if (pid == 0)
 	{
 		if (execve(pathname, tokens, env) == -1)
-		{
-			perror("execv failed");
-		}
+			return (1);
 	}
 	else
 		if (wait(&status) < 0)
 		{
 			perror("wait failed");
-			exit(1);
+			return (1);
 		}
 	return (0);
 }
@@ -92,18 +88,19 @@ int execute_cmd(char *pathname, char **tokens, char **env)
  * Return: 1
  */
 
-int is_builtin(char *cmd)
+int is_builtin(char **args)
 {
 	int i;
 	builtin_t builtins[] = {
-		{"exit", func_exit},
+		{"cd", func_cd},
+		{"pwd", func_pwd},
 		{NULL, NULL}
 	};
 
 	for (i = 0; builtins[i].key != NULL; i++)
 	{
-		if (_strcmp(cmd, builtins[i].key) == 0)
-			builtins[i].f();
+		if (_strcmp(args[0], builtins[i].key) == 0)
+			return (builtins[i].f(args));
 	}
 	return (1);
 }
@@ -116,13 +113,14 @@ int is_builtin(char *cmd)
  */
 int parse_command(char **tokens)
 {
-	char *pathname = NULL;
 	extern char **environ;
+	char *pathname = NULL;
+	int result;
 
 	if (tokens[0])
 	{
-
-		if (is_builtin(tokens[0]) == 1)/*if it was not biltin command */
+		result = is_builtin(tokens);
+		if (result == 1)/*if it was not biltin command */
 		{
 			if (execute_cmd(tokens[0], tokens, environ) == 0)/*command was absolute path*/
 			{
@@ -133,7 +131,6 @@ int parse_command(char **tokens)
 			pathname = create_pathname(tokens[0]);
 			if (pathname != NULL)
 			{
-
 				if (execute_cmd(pathname, tokens, environ) == 0)
 				{
 					free_tab(tokens);
@@ -143,5 +140,5 @@ int parse_command(char **tokens)
 		}
 	}
 	free_tab(tokens);
-	return (0);
+	return (1);
 }

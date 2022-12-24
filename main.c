@@ -21,13 +21,11 @@ char **tokenize(char *buf)
 	}
 
 	token = strtok(buf, " \t\n");
-	tokens[i] = token;
-	i++;
 
 	while (token != NULL)
 	{
+		tokens[i] = _strdup(token);
 		token = strtok(NULL, " \t\n");
-		tokens[i] = token;
 		i++;
 	}
 	tokens[i] = NULL;
@@ -51,7 +49,7 @@ char *read_line(void)
 			exit(EXIT_SUCCESS);
 		else
 		{
-			printf("No such file or directory\n");
+			perror("readline");
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -73,6 +71,11 @@ int main(void)
 	{
 		write(STDOUT_FILENO, "$ ", 2);
 		buf = read_line();
+		if (buf == NULL || _strcmp(buf, "exit") == 0)
+		{
+			free(buf);
+			exit(EXIT_SUCCESS);
+		}
 		tokens = tokenize(buf);
 		status = parse_command(tokens);
 	}

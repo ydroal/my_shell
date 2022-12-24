@@ -74,3 +74,39 @@ char *_strcpy(char *dest, char *src)
 	return (dest);
 
 }
+/**
+ * _strdup - returns a pointer to a new string which is
+ *           a duplicate of the string str.
+ * @str: string to be copiedr
+ * Return: pointer to the duplicated string
+ */
+char *_strdup(char *str)
+{
+
+	char *ar;
+	int i, j;
+
+	if (str == NULL)
+	{
+		return (NULL);
+	}
+
+	for (i = 0; str[i] != '\0'; i++)
+		;
+
+	i++;
+
+	ar = malloc(i * sizeof(char));
+
+	if (ar == NULL)
+	{
+		return (NULL);
+	}
+
+	for (j = 0; j < i; j++)
+	{
+		ar[j] = str[j];
+	}
+
+	return (ar);
+}
