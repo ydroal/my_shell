@@ -2,7 +2,6 @@
 
 It is a simple version of the shell used by Linux.
 This is project for learning how does Shell work and C language.
-I did the same project with my collegues, [Ali Segueg](https://github.com/AliSeg25), and [Maxime Nocquet](https://github.com/Tnozone) but I want to gain knowledge more with coding once again.
 
 
 ## Description
